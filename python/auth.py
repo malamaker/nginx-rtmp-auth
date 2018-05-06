@@ -2,7 +2,6 @@ from flask import Flask, request
 from flask_api import status
 import psycopg2
 import sys
-sys.path.append('/app/flask/auth')
 import config
 
 app = Flask(__name__)
@@ -15,21 +14,18 @@ def auth():
 	username = request.args.get('name')
 	app = request.args.get('app')
 	idhash = request.args.get('id')
-	# idhash = request.args.get('swfurl').split("?")[-1]
+	# idhash = request.args.get('swfurl').split("?")[-1]        
 	
 	conn = psycopg2.connect(database=config.database, user=config.user, password=config.password, host=config.host)
 	cur = conn.cursor()
-	cur.execute("SELECT FROM %s WHERE ((username=%s AND all_access=1 AND idhash=%s) AND (username=%s AND idhash=%s AND (app LIKE %s OR app LIKE %s OR app LIKE %s))) AND enable=1", \
-		    ( \
-		     config.usertablename, \
-		     username, \
+	cur.execute("SELECT FROM " + config.usertablename + " WHERE ((username=%s AND all_access=1 AND idhash=%s) OR (username=%s AND idhash=%s AND (app LIKE %s OR app LIKE %s OR app LIKE %s))) AND enabled=1", \
+		    (username, \
 		     idhash, \
 		     username, \
 		     idhash, \
 		     "all", \
 		     app + ",%", \
-		     "%," + app + ",%" \
-		    ))
+		     "%," + app + ",%"))
 	
 	if len(cur.fetchall()) == 0:
 		return 'Incorrect credentials or access', status.HTTP_401_UNAUTHORIZED
