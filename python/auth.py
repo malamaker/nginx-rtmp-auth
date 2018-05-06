@@ -1,6 +1,8 @@
 from flask import Flask, request
 from flask_api import status
 import psycopg2
+import sys
+sys.path.append('/app/flask/auth')
 import config
 
 app = Flask(__name__)
