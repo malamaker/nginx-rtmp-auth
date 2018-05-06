@@ -13,14 +13,26 @@ def auth():
 		return 'Malformed request', status.HTTP_400_BAD_REQUEST
 	
 	username = request.args.get('name')
-	idhash = request.args.get('swfurl').split("?")[-1]
+	app = request.args.get('app')
+	idhash = request.args.get('id')
+	# idhash = request.args.get('swfurl').split("?")[-1]
 	
 	conn = psycopg2.connect(database=config.database, user=config.user, password=config.password, host=config.host)
 	cur = conn.cursor()
-	cur.execute("SELECT FROM %s WHERE username=%s AND idhash=%s AND enable=1", (config.usertablename, username, idhash))
+	cur.execute("SELECT FROM %s WHERE ((username=%s AND all_access=1 AND idhash=%s) AND (username=%s AND idhash=%s AND (app LIKE %s OR app LIKE %s OR app LIKE %s))) AND enable=1", \
+		    ( \
+		     config.usertablename, \
+		     username, \
+		     idhash, \
+		     username, \
+		     idhash, \
+		     "all", \
+		     app + ",%", \
+		     "%," + app + ",%" \
+		    ))
 	
 	if len(cur.fetchall()) == 0:
-		return 'Incorrect credentials', status.HTTP_401_UNAUTHORIZED
+		return 'Incorrect credentials or access', status.HTTP_401_UNAUTHORIZED
 
 	return 'OK', status.HTTP_200_OK
 
