@@ -1,5 +1,5 @@
 from flask import Flask, request
-from flask.ext.api import status
+from flask_api import status
 import psycopg2
 import config
 
