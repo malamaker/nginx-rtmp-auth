@@ -9,7 +9,7 @@ app = Flask(__name__)
 
 @app.route('/auth')
 def auth():
-	if request.args.get('name') is None or request.args.get('swfurl') is None:
+	if request.args.get('name') is None or request.args.get('id') is None:
 		return 'Malformed request', status.HTTP_400_BAD_REQUEST
 	
 	username = request.args.get('name')
