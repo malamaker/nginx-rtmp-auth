@@ -35,19 +35,23 @@ Server-side configuration:
             email varchar(128),
             password varchar(64),
             idhash varchar(64) NOT NULL,
-            app varchar(128) NOT NULL default 'live,',
-            all_access int NOT NULL default 0,
+            app_stream varchar(1024),
+            streams SMALLINT NOT NULL default 1,
             enabled int NOT NULL default 1,
-            date_added timestamp default NOW()
+            date_added timestamp default NOW(),
+            CHECK (streams > 0),
+            CHECK (streams <= 99),
+            CHECK (enabled >= 0),
+            CHECK (enabled <= 1)
         );
       </code>
       <p>Example User SQL (basic, single channel):
       <code>
-       Insert into user_store (username, idhash) VALUES ('example', 'example');
+       Insert into user_store (username, idhash, app_stream) VALUES ('example', 'example', 'live/example');
       </code>
-      <p>Example User SQL (unlimited, unlimited channels):
+      <p>Example User SQL (single app, unlimited channels):
       <code>
-       Insert into user_store (username, idhash, all_access) VALUES ('unlimited', 'example', 1);
+       Insert into user_store (username, idhash, app_stream) VALUES ('unlimited', 'example', 'live/*');
       </code>
     - Other columns may be added as required
 
