@@ -28,6 +28,27 @@ Server-side configuration:
       - all_access int NOT NULL default 0
       - enabled int NOT NULL default 1
       - date_added timestamp default NOW()
+      <p>Table Create SQL:
+      <code>
+       CREATE TABLE user_store (
+            username varchar(64) primary key,
+            email varchar(128),
+            password varchar(64),
+            idhash varchar(64) NOT NULL,
+            app varchar(128) NOT NULL default 'live,',
+            all_access int NOT NULL default 0,
+            enabled int NOT NULL default 1,
+            date_added timestamp default NOW()
+        );
+      </code>
+      <p>Example User SQL (basic, single channel):
+      <code>
+       Insert into user_store (username, idhash) VALUES ('example', 'example');
+      </code>
+      <p>Example User SQL (unlimited, unlimited channels):
+      <code>
+       Insert into user_store (username, idhash, all_access) VALUES ('unlimited', 'example', 1);
+      </code>
     - Other columns may be added as required
 
 # Non-specific
