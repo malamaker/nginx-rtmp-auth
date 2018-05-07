@@ -59,11 +59,11 @@ Server-side configuration:
 
 Broadcaster-side configuration (assuming OBS):
   - Under Broadcast Settings, set Custom as the streaming service
-  - Set server to "rtmp://DOMAIN/app/username?id=IDHASH"
-  - Set play path to USERNAME
+  - Set server to "rtmp://domain.example:1935/APP/STREAM?user=USERNAME&id=IDHASH"
+  - Set play path to stream
   
 Player-side configuration:
-  - The RTMP URL will be in the format "rtmp://DOMAIN/app/username" (assumes default rtmp server application block name of "stream")
+  - The RTMP URL will be in the format "rtmp://domain.example:1935/APP/STREAM" (assumes default rtmp server application block name of "stream")
 
 Known issues:
   - OBS Studio (aka OBS MultiPlatform aka OBS Linux/Mac) versions <0.11.4 mangle variables defined in the server/stream URL when passing them to nginx, meaning that information sent that way (i.e. idhash) cannot be accessed by the authentication script
