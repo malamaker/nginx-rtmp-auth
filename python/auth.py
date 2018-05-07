@@ -8,24 +8,36 @@ app = Flask(__name__)
 
 @app.route('/auth')
 def auth():
-	if request.args.get('name') is None or request.args.get('id') is None:
+	if request.args.get('name') is None or request.args.get('user') is None or request.args.get('id') is None:
 		return 'Malformed request', status.HTTP_400_BAD_REQUEST
 	
-	username = request.args.get('name')
+	stream = request.args.get('name')
 	app = request.args.get('app')
+	username = request.args.get('user')
 	idhash = request.args.get('id')
-	# idhash = request.args.get('swfurl').split("?")[-1]        
+	
+	streamNum = 0
+	undScr = stream[len(stream)-3:-2] == "_"
+	if undScr:
+		streamNumTmp = stream[len(stream)-2:]
+		try:
+        		streamNum = int(streamNumTmp)
+			stream = stream[:-3]
+    		except ValueError:
+        		return 'Malformed stream', status.HTTP_400_BAD_REQUEST
+		
+	app_stream = app + "/" + stream
+	app_streamWildcard = app + "/*"
 	
 	conn = psycopg2.connect(database=config.database, user=config.user, password=config.password, host=config.host)
 	cur = conn.cursor()
-	cur.execute("SELECT FROM " + config.usertablename + " WHERE ((username=%s AND all_access=1 AND idhash=%s) OR (username=%s AND idhash=%s AND (app LIKE %s OR app LIKE %s OR app LIKE %s))) AND enabled=1", \
+	cur.execute("SELECT FROM " + config.usertablename + " WHERE username=%s AND idhash=%s AND enabled=1 AND (app_stream = %s OR app_stream LIKE %s OR (app_stream LIKE %s AND streams <= %s)) ", \
 		    (username, \
 		     idhash, \
-		     username, \
-		     idhash, \
 		     "all", \
-		     app + ",%", \
-		     "%," + app + ",%"))
+		     "%" + app_streamWildcard + "%", \
+		     "%" + app_stream + "%", \
+		     streamNum))
 	
 	if len(cur.fetchall()) == 0:
 		return 'Incorrect credentials or access', status.HTTP_401_UNAUTHORIZED
