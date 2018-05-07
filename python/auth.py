@@ -20,6 +20,10 @@ def auth():
 	undScr = stream[len(stream)-3:-2] == "_"
 	if undScr:
 		streamNumTmp = stream[len(stream)-2:]
+
+		if streamNumTmp == "00":
+			return 'Incorrect credentials or access', status.HTTP_400_BAD_REQUEST
+
 		try:
         		streamNum = int(streamNumTmp)
 			stream = stream[:-3]
@@ -31,13 +35,12 @@ def auth():
 	
 	conn = psycopg2.connect(database=config.database, user=config.user, password=config.password, host=config.host)
 	cur = conn.cursor()
-	cur.execute("SELECT FROM " + config.usertablename + " WHERE username=%s AND idhash=%s AND enabled=1 AND (app_stream = %s OR app_stream LIKE %s OR (app_stream LIKE %s AND streams <= %s)) ", \
+	cur.execute("SELECT FROM " + config.usertablename + " WHERE username=%s AND idhash=%s AND enabled=1 AND (app_stream = %s OR app_stream LIKE %s OR (app_stream LIKE %s AND streams >= %s))", \
 		    (username, \
 		     idhash, \
 		     "all", \
 		     "%" + app_streamWildcard + "%", \
-		     "%" + app_stream + "%", \
-		     streamNum))
+		     "%" + app_stream + "%", streamNum))
 	
 	if len(cur.fetchall()) == 0:
 		return 'Incorrect credentials or access', status.HTTP_401_UNAUTHORIZED
