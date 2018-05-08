@@ -24,8 +24,8 @@ Server-side configuration:
       - email VARCHAR(64)
       - password VARCHAR(64)
       - idhash VARCHAR(64)
-      - app varchar(128) NOT NULL default 'live,'
-      - all_access int NOT NULL default 0
+      - app_stream varchar(1024)
+      - streams SMALLINT NOT NULL default 0
       - enabled int NOT NULL default 1
       - date_added timestamp default NOW()
       <p>Table Create SQL:
