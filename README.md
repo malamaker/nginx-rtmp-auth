@@ -36,10 +36,10 @@ Server-side configuration:
             password varchar(64),
             idhash varchar(64) NOT NULL,
             app_stream varchar(1024),
-            streams SMALLINT NOT NULL default 1,
+            streams SMALLINT NOT NULL default 0,
             enabled int NOT NULL default 1,
             date_added timestamp default NOW(),
-            CHECK (streams > 0),
+            CHECK (streams >= 0),
             CHECK (streams <= 99),
             CHECK (enabled >= 0),
             CHECK (enabled <= 1)
